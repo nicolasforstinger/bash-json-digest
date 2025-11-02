@@ -4,12 +4,12 @@
 set -e
 
 if ! command -v curl &> /dev/null; then
-    echo -e "✗ curl is not installed" >&2
+    echo "✗ curl is not installed" >&2
     exit 1
 fi
 
 if ! command -v jq &> /dev/null; then
-    echo -e "✗ jq is not installed" >&2
+    echo "✗ jq is not installed" >&2
     exit 1
 fi
 
@@ -17,27 +17,27 @@ URL="$1"
 FORMAT="${2:-simple}"
 
 if [[ ! "$URL" =~ ^https?:// ]]; then
-    echo -e "✗ Invalid URL format. Must start with http:// or https://" >&2
+    echo "✗ Invalid URL format. Must start with http:// or https://" >&2
     exit 1
 fi
 
-echo -e "Fetching data from: ${URL}"
+echo "Fetching data from: ${URL}"
 JSON_DATA=$(curl -s -w "\n%{http_code}" "$URL")
 
 HTTP_CODE=$(echo "$JSON_DATA" | tail -n1)
 BODY=$(echo "$JSON_DATA" | sed '$d')
 
 if [[ "$HTTP_CODE" -ne 200 ]]; then
-    echo -e "✗ HTTP $HTTP_CODE - Failed to fetch data" >&2
+    echo "✗ HTTP $HTTP_CODE - Failed to fetch data" >&2
     exit 1
 fi
 
 if ! echo "$BODY" | jq empty 2>/dev/null; then
-    echo -e "✗ Invalid JSON response" >&2
+    echo "✗ Invalid JSON response" >&2
     exit 1
 fi
 
-echo -e "✓ Data retrieved successfully\n"
+echo "✓ Data retrieved successfully"
 
 case "$FORMAT" in
     simple)
@@ -77,7 +77,7 @@ case "$FORMAT" in
         echo "$BODY" | jq '.'
         ;;
     *)
-        echo -e "✗ Invalid format '$FORMAT'. Use 'simple', 'detailed', or 'raw'" >&2
+        echo "✗ Invalid format '$FORMAT'. Use 'simple', 'detailed', or 'raw'" >&2
         exit 1
         ;;
 esac
